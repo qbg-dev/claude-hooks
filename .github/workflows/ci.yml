@@ -1,0 +1,24 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate manifest JSON
+        run: python3 -c "import json; m=json.load(open('hooks/manifest.json')); print(f'{len(m[\"hooks\"])} hooks defined')"
+      - name: Check hook scripts exist
+        run: |
+          python3 -c "
+          import json, os, sys
+          m = json.load(open('hooks/manifest.json'))
+          missing = 0
+          for h in m['hooks']:
+              if 'path' not in h: continue
+              p = h['path']
+              if '{PROJECT_ROOT}' in p or '~/' in p: continue
+              if not os.path.isfile(p):
+                  print(f'MISSING: {p}')
+                  missing += 1
+          sys.exit(missing)
+          "
