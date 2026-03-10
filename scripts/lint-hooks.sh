@@ -83,6 +83,8 @@ errors = 0
 warnings = 0
 
 for h in manifest['hooks']:
+    if 'path' not in h:
+        continue
     path = h['path'].replace('~/', os.path.expanduser('~') + '/')
     # Skip project-specific (path contains {PROJECT_ROOT})
     if '{PROJECT_ROOT}' in path:
@@ -131,6 +133,8 @@ warnings = 0
 
 # Build lookup: command substring -> hook id
 for h in manifest['hooks']:
+    if 'path' not in h:
+        continue
     if h.get('category') == 'project':
         continue
 
@@ -296,7 +300,7 @@ else
   info ""
   if [ "$FIX" = true ]; then
     info "Running setup-hooks.sh to fix..."
-    bash "$CLAUDE_OPS_DIR/scripts/setup-hooks.sh"
+    bash "$CLAUDE_HOOKS_DIR/scripts/setup-hooks.sh"
   else
     info "Run with --fix to auto-install, or:"
     info "  bash ~/.claude-ops/scripts/setup-hooks.sh"
